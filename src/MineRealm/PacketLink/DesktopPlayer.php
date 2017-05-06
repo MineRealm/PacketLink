@@ -19,9 +19,9 @@ namespace MineRealm\PacketLink;
 
 use pocketmine\event\Timings;
 use pocketmine\level\Level;
-use pocketmine\network\protocol\Info;
-use pocketmine\network\protocol\LoginPacket;
-use pocketmine\network\protocol\RequestChunkRadiusPacket;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
+use pocketmine\network\mcpe\protocol\LoginPacket;
+use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\SourceInterface;
 use pocketmine\Player;
 use pocketmine\Server;
@@ -226,7 +226,7 @@ class DesktopPlayer extends Player{
 
 			$pk = new LoginPacket();
 			$pk->username = $this->packetLink_username;
-			$pk->protocol = Info::CURRENT_PROTOCOL;
+			$pk->protocol = ProtocolInfo::CURRENT_PROTOCOL;
 			$pk->clientUUID = UUID::fromString($this->packetLink_formatedUUID);
 			$pk->clientId = crc32($this->bigbrother_clientId);
 			$pk->serverAddress = "127.0.0.1:25565";

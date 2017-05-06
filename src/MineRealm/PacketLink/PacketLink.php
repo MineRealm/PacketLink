@@ -18,7 +18,7 @@
 namespace MineRealm\PacketLink;
 
 use pocketmine\plugin\PluginBase;
-use pocketmine\network\protocol\Info;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\block\Block;
 use pocketmine\event\player\PlayerRespawnEvent;
 use pocketmine\event\block\BlockPlaceEvent;
@@ -69,7 +69,7 @@ class PacketLink extends PluginBase implements Listener{
 			return;
 		}
 
-		if(Info::CURRENT_PROTOCOL === 107){
+		if(ProtocolInfo::CURRENT_PROTOCOL === 107){
 			$this->translator = new Translator_107();
 			$this->rsa = new RSA();
 
@@ -102,7 +102,7 @@ class PacketLink extends PluginBase implements Listener{
 				$this->getServer()->getNetwork()->registerInterface($this->interface);
 			}
 		}else{
-			$this->getLogger()->critical("Couldn't find a protocol translator for #".Info::CURRENT_PROTOCOL .", disabling plugin");
+			$this->getLogger()->critical("Couldn't find a protocol translator for #".ProtocolInfo::CURRENT_PROTOCOL .", disabling plugin");
 			$this->getPluginLoader()->disablePlugin($this);
 		}
 	}

@@ -17,7 +17,7 @@
 
 namespace MineRealm\PacketLink\network;
 
-use pocketmine\network\protocol\DataPacket;
+use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\SourceInterface;
 use pocketmine\Player;
 use pocketmine\utils\MainLogger;
@@ -126,7 +126,7 @@ class ProtocolInterface implements SourceInterface{
 		if($id !== "1f"){
 			echo "[Send][Interface] 0x".bin2hex(chr($packet->pid()))."\n";
 		}
-		
+
 		$data = chr(ServerManager::PACKET_SEND_PACKET) . Binary::writeInt($target) . $packet->write();
 		$this->thread->pushMainToThreadPacket($data);
 	}

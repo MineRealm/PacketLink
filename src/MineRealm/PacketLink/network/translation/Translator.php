@@ -17,7 +17,7 @@
 
 namespace MineRealm\PacketLink\network\translation;
 
-use pocketmine\network\protocol\DataPacket;
+use pocketmine\network\mcpe\protocol\DataPacket;
 use MineRealm\PacketLink\DesktopPlayer;
 use MineRealm\PacketLink\network\Packet;
 

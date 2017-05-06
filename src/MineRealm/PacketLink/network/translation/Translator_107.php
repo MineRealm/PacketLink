@@ -26,27 +26,27 @@ use pocketmine\item\Item;
 use pocketmine\block\Block;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
-use pocketmine\network\protocol\AnimatePacket;
-use pocketmine\network\protocol\BlockEntityDataPacket;
-use pocketmine\network\protocol\ContainerClosePacket;
-use pocketmine\network\protocol\ContainerOpenPacket;
-use pocketmine\network\protocol\ContainerSetContentPacket;
-use pocketmine\network\protocol\ContainerSetSlotPacket;
-use pocketmine\network\protocol\CraftingEventPacket;
-use pocketmine\network\protocol\DataPacket;
-use pocketmine\network\protocol\DropItemPacket;
-use pocketmine\network\protocol\EntityEventPacket;
-use pocketmine\network\protocol\LevelEventPacket;
-use pocketmine\network\protocol\Info;
-use pocketmine\network\protocol\InteractPacket;
-use pocketmine\network\protocol\TextPacket;
-use pocketmine\network\protocol\MovePlayerPacket;
-use pocketmine\network\protocol\PlayerActionPacket;
-use pocketmine\network\protocol\MobArmorEquipmentPacket;
-use pocketmine\network\protocol\MobEquipmentPacket;
-use pocketmine\network\protocol\MobEffectPacket;
-use pocketmine\network\protocol\RemoveBlockPacket;
-use pocketmine\network\protocol\UseItemPacket;
+use pocketmine\network\mcpe\protocol\AnimatePacket;
+use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
+use pocketmine\network\mcpe\protocol\ContainerClosePacket;
+use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
+use pocketmine\network\mcpe\protocol\ContainerSetContentPacket;
+use pocketmine\network\mcpe\protocol\ContainerSetSlotPacket;
+use pocketmine\network\mcpe\protocol\CraftingEventPacket;
+use pocketmine\network\mcpe\protocol\DataPacket;
+use pocketmine\network\mcpe\protocol\DropItemPacket;
+use pocketmine\network\mcpe\protocol\EntityEventPacket;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
+use pocketmine\network\mcpe\protocol\InteractPacket;
+use pocketmine\network\mcpe\protocol\TextPacket;
+use pocketmine\network\mcpe\protocol\MovePlayerPacket;
+use pocketmine\network\mcpe\protocol\PlayerActionPacket;
+use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
+use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
+use pocketmine\network\mcpe\protocol\MobEffectPacket;
+use pocketmine\network\mcpe\protocol\RemoveBlockPacket;
+use pocketmine\network\mcpe\protocol\UseItemPacket;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\UUID;
@@ -83,7 +83,7 @@ use MineRealm\PacketLink\network\protocol\Play\PlayDisconnectPacket;
 use MineRealm\PacketLink\network\protocol\Play\Server\PlayerAbilitiesPacket;
 use MineRealm\PacketLink\network\protocol\Play\PlayerListPacket;
 use MineRealm\PacketLink\network\protocol\Play\Server\PlayerPositionAndLookPacket;
-use MineRealm\PacketLink\network\protocol\Play\Server\TabComletePacket;
+use MineRealm\PacketLink\network\protocol\Play\Server\TabCompletePacket;
 use MineRealm\PacketLink\network\protocol\Play\ScoreboardObjectivePacket;
 use MineRealm\PacketLink\network\protocol\Play\ServerDifficultyPacket;
 use MineRealm\PacketLink\network\protocol\Play\SetSlotPacket;
@@ -610,7 +610,7 @@ class Translator_107 implements Translator{
 
 	public function serverToInterface(DesktopPlayer $player, DataPacket $packet){
 		switch($packet->pid()){
-			case Info::DISCONNECT_PACKET:
+			case ProtocolInfo::DISCONNECT_PACKET:
 				if($player->packetLink_getStatus() === 0){
 					$pk = new LoginDisconnectPacket();
 					$pk->reason = PacketLink::toJSON($packet->message === "" ? "You have been disconnected." : $packet->message);
@@ -620,7 +620,7 @@ class Translator_107 implements Translator{
 				}
 				return $pk;
 
-			case Info::TEXT_PACKET:
+			case ProtocolInfo::TEXT_PACKET:
 				if($packet->message === "chat.type.achievement"){
 					return null;//TODO
 				}else{
@@ -645,13 +645,13 @@ class Translator_107 implements Translator{
 
 				return $pk;
 
-			case Info::SET_TIME_PACKET:
+			case ProtocolInfo::SET_TIME_PACKET:
 				$pk = new TimeUpdatePacket();
 				$pk->age = $packet->time;
 				$pk->time = $packet->time;
 				return $pk;
 
-			case Info::START_GAME_PACKET:
+			case ProtocolInfo::START_GAME_PACKET:
 				$packets = [];
 
 				$pk = new JoinGamePacket();
@@ -689,7 +689,7 @@ class Translator_107 implements Translator{
 
 				return $packets;
 
-			case Info::ADD_PLAYER_PACKET:
+			case ProtocolInfo::ADD_PLAYER_PACKET:
 				$packets = [];
 
 				$pk = new SpawnPlayerPacket();
@@ -714,7 +714,7 @@ class Translator_107 implements Translator{
 
 				return $packets;
 
-			case Info::ADD_ENTITY_PACKET:
+			case ProtocolInfo::ADD_ENTITY_PACKET:
 				$packets = [];
 
 				$isobject = false;
@@ -964,12 +964,12 @@ class Translator_107 implements Translator{
 				
 				return $packets;
 
-			case Info::REMOVE_ENTITY_PACKET:
+			case ProtocolInfo::REMOVE_ENTITY_PACKET:
 				$pk = new DestroyEntitiesPacket();
 				$pk->ids[] = $packet->eid;
 				return $pk;
 
-			case Info::ADD_ITEM_ENTITY_PACKET://Bug
+			case ProtocolInfo::ADD_ITEM_ENTITY_PACKET://Bug
 				//echo "AddItemEntityPacket: ".$packet->eid."\n";
 
 				$item = clone $packet->item;
@@ -1003,7 +1003,7 @@ class Translator_107 implements Translator{
 
 				return $packets;
 
-			case Info::TAKE_ITEM_ENTITY_PACKET:
+			case ProtocolInfo::TAKE_ITEM_ENTITY_PACKET:
 				$itemCount = 1;
 
 				if(($entity = $player->getLevel()->getEntity($packet->target)) instanceof ItemEntity){
@@ -1017,7 +1017,7 @@ class Translator_107 implements Translator{
 
 				return $pk;
 
-			case Info::MOVE_ENTITY_PACKET:
+			case ProtocolInfo::MOVE_ENTITY_PACKET:
 				if($packet->eid === $player->getId()){//TODO
 					return null;
 				}else{
@@ -1042,7 +1042,7 @@ class Translator_107 implements Translator{
 					return $packets;
 				}
 
-			case Info::MOVE_PLAYER_PACKET:
+			case ProtocolInfo::MOVE_PLAYER_PACKET:
 				if($packet->eid === $player->getId()){//TODO
 					$pk = new PlayerPositionAndLookPacket();
 					$pk->x = $packet->x;
@@ -1072,7 +1072,7 @@ class Translator_107 implements Translator{
 					return $packets;
 				}
 
-			case Info::UPDATE_BLOCK_PACKET:
+			case ProtocolInfo::UPDATE_BLOCK_PACKET:
 				ConvertUtils::convertBlockData(true, $packet->blockId, $packet->blockData);
 
 				$pk = new BlockChangePacket();
@@ -1097,7 +1097,7 @@ class Translator_107 implements Translator{
 
 				return $pk;*/
 
-			case Info::LEVEL_EVENT_PACKET://TODO
+			case ProtocolInfo::LEVEL_EVENT_PACKET://TODO
 				$issoundeffect = false;
 
 				if($packet->evid & LevelEventPacket::EVENT_ADD_PARTICLE_MASK){
@@ -1157,7 +1157,7 @@ class Translator_107 implements Translator{
 
 				return $pk;
 
-			case Info::BLOCK_EVENT_PACKET:
+			case ProtocolInfo::BLOCK_EVENT_PACKET:
 				$packets = [];
 
 				$pk = new BlockActionPacket();
@@ -1197,7 +1197,7 @@ class Translator_107 implements Translator{
 
 				return $packets;
 
-			case Info::ENTITY_EVENT_PACKET:
+			case ProtocolInfo::ENTITY_EVENT_PACKET:
 				switch($packet->event){
 					case EntityEventPacket::HURT_ANIMATION:
 						$pk = new EntityStatusPacket();
@@ -1227,7 +1227,7 @@ class Translator_107 implements Translator{
 
 				return null;
 
-			case Info::MOB_EFFECT_PACKET:
+			case ProtocolInfo::MOB_EFFECT_PACKET:
 				switch($packet->eventId){
 					case MobEffectPacket::EVENT_ADD:
 					case MobEffectPacket::EVENT_MODIFY:
@@ -1259,7 +1259,7 @@ class Translator_107 implements Translator{
 				
 				return null;
 
-			case Info::UPDATE_ATTRIBUTES_PACKET:
+			case ProtocolInfo::UPDATE_ATTRIBUTES_PACKET:
 				$packets = [];
 				$entries = [];
 
@@ -1330,7 +1330,7 @@ class Translator_107 implements Translator{
 
 				return $packets;
 
-			case Info::MOB_EQUIPMENT_PACKET:
+			case ProtocolInfo::MOB_EQUIPMENT_PACKET:
 				$pk = new EntityEquipmentPacket();
 				$pk->eid = $packet->eid;
 				$pk->slot = 0;//main hand
@@ -1338,7 +1338,7 @@ class Translator_107 implements Translator{
 
 				return $pk;
 
-			case Info::MOB_ARMOR_EQUIPMENT_PACKET:
+			case ProtocolInfo::MOB_ARMOR_EQUIPMENT_PACKET:
 				$packets = [];
 
 				foreach($packet->slots as $num => $item){
@@ -1351,7 +1351,7 @@ class Translator_107 implements Translator{
 
 				return $packets;
 
-			case Info::SET_ENTITY_DATA_PACKET:
+			case ProtocolInfo::SET_ENTITY_DATA_PACKET:
 				$packets = [];
 
 				if($player->getSetting("BossBar") !== false){
@@ -1391,7 +1391,7 @@ class Translator_107 implements Translator{
 
 				return $packets;
 
-			case Info::SET_ENTITY_MOTION_PACKET:
+			case ProtocolInfo::SET_ENTITY_MOTION_PACKET:
 				$pk = new EntityVelocityPacket();
 				$pk->eid = $packet->eid;
 				$pk->velocityX = $packet->motionX;
@@ -1405,21 +1405,21 @@ class Translator_107 implements Translator{
 				$pk->passengers = [$packet->to];
 				return $pk;*/
 
-			case Info::SET_HEALTH_PACKET:
+			case ProtocolInfo::SET_HEALTH_PACKET:
 				$pk = new UpdateHealthPacket();
 				$pk->health = $packet->health;//TODO: Default Value
 				$pk->food = $player->getFood();//TODO: Default Value
 				$pk->saturation = $player->getSaturation();//TODO: Default Value
 				return $pk;
 
-			case Info::SET_SPAWN_POSITION_PACKET:
+			case ProtocolInfo::SET_SPAWN_POSITION_PACKET:
 				$pk = new SpawnPositionPacket();
 				$pk->spawnX = $packet->x;
 				$pk->spawnY = $packet->y;
 				$pk->spawnZ = $packet->z;
 				return $pk;
 
-			case Info::ANIMATE_PACKET:
+			case ProtocolInfo::ANIMATE_PACKET:
 				switch($packet->action){
 					case 1:
 						$pk = new STCAnimatePacket();
@@ -1439,7 +1439,7 @@ class Translator_107 implements Translator{
 				}	
 				return null;
 
-			case Info::CONTAINER_OPEN_PACKET:
+			case ProtocolInfo::CONTAINER_OPEN_PACKET:
 				$type = "";
 				switch($packet->type){
 					case 0:
@@ -1471,7 +1471,7 @@ class Translator_107 implements Translator{
 
 				return $pk;
 
-			case Info::CONTAINER_CLOSE_PACKET:
+			case ProtocolInfo::CONTAINER_CLOSE_PACKET:
 				$pk = new CloseWindowPacket();
 				$pk->windowID = $packet->windowid;
 
@@ -1479,7 +1479,7 @@ class Translator_107 implements Translator{
 
 				return $pk;
 
-			case Info::CONTAINER_SET_SLOT_PACKET:
+			case ProtocolInfo::CONTAINER_SET_SLOT_PACKET:
 				$pk = new SetSlotPacket();
 				$pk->windowID = $packet->windowid;
 
@@ -1510,7 +1510,7 @@ class Translator_107 implements Translator{
 
 				return null;
 
-			case Info::CONTAINER_SET_CONTENT_PACKET:
+			case ProtocolInfo::CONTAINER_SET_CONTENT_PACKET:
 				$pk = new WindowItemsPacket();
 				$pk->windowID = $packet->windowid;
 
@@ -1601,11 +1601,11 @@ class Translator_107 implements Translator{
 
 				return null;
 
-			case Info::CRAFTING_DATA_PACKET:
+			case ProtocolInfo::CRAFTING_DATA_PACKET:
 				$player->setSetting(["Recipes" => $packet->entries, "cleanRecipes" => $packet->cleanRecipes]);
 				return null;
 
-			case Info::BLOCK_ENTITY_DATA_PACKET:
+			case ProtocolInfo::BLOCK_ENTITY_DATA_PACKET:
 				$pk = new UpdateBlockEntityPacket();
 				$pk->x = $packet->x;
 				$pk->y = $packet->y;
@@ -1632,12 +1632,12 @@ class Translator_107 implements Translator{
 				
 				return $pk;
 
-			case Info::SET_DIFFICULTY_PACKET:
+			case ProtocolInfo::SET_DIFFICULTY_PACKET:
 				$pk = new ServerDifficultyPacket();
 				$pk->difficulty = $packet->difficulty;
 				return $pk;
 
-			case Info::SET_PLAYER_GAME_TYPE_PACKET:
+			case ProtocolInfo::SET_PLAYER_GAME_TYPE_PACKET:
 				$packets = [];
 
 				$pk = new PlayerAbilitiesPacket();
@@ -1656,7 +1656,7 @@ class Translator_107 implements Translator{
 
 				return $packets;
 
-			case Info::PLAYER_LIST_PACKET:
+			case ProtocolInfo::PLAYER_LIST_PACKET:
 				$packets = [];
 				$pk = new PlayerListPacket();
 
@@ -1754,7 +1754,7 @@ class Translator_107 implements Translator{
 
 				return null;
 
-			case Info::BATCH_PACKET:
+			case ProtocolInfo::BATCH_PACKET:
 				$packets = [];
 
 				$str = zlib_decode($packet->payload, 1024 * 1024 * 64); //Max 64MB
@@ -1778,7 +1778,7 @@ class Translator_107 implements Translator{
 						$pk->decode();
 
 						switch($pk::NETWORK_ID){
-							case Info::PLAYER_LIST_PACKET:
+							case ProtocolInfo::PLAYER_LIST_PACKET:
 								$pk->type = $pk->getByte();
 								$entries = $pk->getUnsignedVarInt();
 								for($i = 0; $i < $entries; $i++){
@@ -1797,7 +1797,7 @@ class Translator_107 implements Translator{
 									}
 								}
 							break;
-							case Info::ADD_ENTITY_PACKET:
+							case ProtocolInfo::ADD_ENTITY_PACKET:
 								$pk->eid = $pk->getEntityId();
 								$pk->eid = $pk->getEntityId();
 								$pk->type = $pk->getUnsignedVarInt();
@@ -1842,7 +1842,7 @@ class Translator_107 implements Translator{
 				
 				return $packets;
 
-			case Info::BOSS_EVENT_PACKET:
+			case ProtocolInfo::BOSS_EVENT_PACKET:
 				$pk = new BossBarPacket();
 
 				switch($packet->type){
@@ -1893,13 +1893,13 @@ class Translator_107 implements Translator{
 				}
 				return null;
 
-			case Info::PLAY_STATUS_PACKET:
-			case Info::RESOURCE_PACKS_INFO_PACKET:
-			case Info::RESPAWN_PACKET:
-			case Info::ADVENTURE_SETTINGS_PACKET:
-			case Info::FULL_CHUNK_DATA_PACKET:
-			case Info::CHUNK_RADIUS_UPDATED_PACKET:
-			case Info::AVAILABLE_COMMANDS_PACKET:
+			case ProtocolInfo::PLAY_STATUS_PACKET:
+			case ProtocolInfo::RESOURCE_PACKS_INFO_PACKET:
+			case ProtocolInfo::RESPAWN_PACKET:
+			case ProtocolInfo::ADVENTURE_SETTINGS_PACKET:
+			case ProtocolInfo::FULL_CHUNK_DATA_PACKET:
+			case ProtocolInfo::CHUNK_RADIUS_UPDATED_PACKET:
+			case ProtocolInfo::AVAILABLE_COMMANDS_PACKET:
 				return null;
 
 			default:
