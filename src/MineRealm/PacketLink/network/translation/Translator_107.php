@@ -1083,7 +1083,7 @@ class Translator_107 implements Translator{
 				$pk->blockMeta = $packet->blockData;
 				return $pk;
 
-			/*case Info::ADD_PAINTING_PACKET://Bug
+			/*case ProtocolInfo::ADD_PAINTING_PACKET://Bug
 				$pk = new SpawnPaintingPacket();
 				$pk->eid = $packet->eid;
 				$pk->uuid = UUID::fromRandom()->toBinary();
@@ -1399,7 +1399,7 @@ class Translator_107 implements Translator{
 				$pk->velocityZ = $packet->motionZ;
 				return $pk;
 
-			/*case Info::SET_ENTITY_LINK_PACKET:
+			/*case ProtocolInfo::SET_ENTITY_LINK_PACKET:
 				$pk = new SetPassengersPacket();
 				$pk->eid = $packet->from;
 				$pk->passengers = [$packet->to];
@@ -1769,7 +1769,7 @@ class Translator_107 implements Translator{
 				while($stream->offset < $len){
 					$buf = $stream->getString();
 					if(($pk = $player->getServer()->getNetwork()->getPacket(ord($buf{0}))) !== null){
-						if($pk::NETWORK_ID === Info::BATCH_PACKET){
+						if($pk::NETWORK_ID === ProtocolInfo::BATCH_PACKET){
 							throw new \InvalidStateException("Invalid BatchPacket inside BatchPacket");
 						}
 
