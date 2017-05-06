@@ -49,7 +49,7 @@ class DesktopPlayer extends Player{
 	private $packetLink_checkToken;
 	private $packetLink_secret;
 	private $packetLink_username;
-	private $bigbrother_clientId;
+	private $packetLink_clientId;
 	private $packetLink_dimension;
 	protected $Settings = [];
 	/** @var ProtocolInterface */
@@ -57,7 +57,7 @@ class DesktopPlayer extends Player{
 
 	public function __construct(SourceInterface $interface, $clientID, $address, $port, PacketLink $plugin){
 		$this->plugin = $plugin;
-		$this->bigbrother_clientId = $clientID;
+		$this->packetLink_clientId = $clientID;
 		parent::__construct($interface, $clientID, $address, $port);
 		$this->setRemoveFormat(false);// Color Code
 	}
@@ -228,7 +228,7 @@ class DesktopPlayer extends Player{
 			$pk->username = $this->packetLink_username;
 			$pk->protocol = ProtocolInfo::CURRENT_PROTOCOL;
 			$pk->clientUUID = UUID::fromString($this->packetLink_formatedUUID);
-			$pk->clientId = crc32($this->bigbrother_clientId);
+			$pk->clientId = crc32($this->packetLink_clientId);
 			$pk->serverAddress = "127.0.0.1:25565";
 			if($skin === null or $skin === false){
 				if($this->plugin->getConfig()->get("skin-slim")){
